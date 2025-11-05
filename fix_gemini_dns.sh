@@ -26,7 +26,7 @@ pkill -f "langflow run" 2>/dev/null || true
 sleep 2
 
 # Start Langflow with proper DNS configuration
-echo "Starting: uv run langflow run"
+echo "Starting: langflow run"
 echo ""
-uv run langflow run
+langflow run
 
