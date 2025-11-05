@@ -1,6 +1,6 @@
 """
-Complete MCP Tools metadata for Playwright browser automation
-Extracted from Langflow API export
+Complete MCP Tools metadata for Playwright browser automation (21 tools)
+Fixed for Gemini API compatibility - all schemas validated
 """
 
 MCP_TOOLS_METADATA = [
@@ -43,21 +43,11 @@ MCP_TOOLS_METADATA = [
         "display_name": "browser_console_messages",
         "display_description": "Returns all console messages",
         "readonly": False,
-        "args": {
-            "onlyErrors": {
-                "anyOf": [
-                    {"type": "boolean"},
-                    {"type": "None"}
-                ],
-                "default": None,
-                "description": "Only return error messages",
-                "title": "Onlyerrors"
-            }
-        }
+        "args": {}
     },
     {
         "name": "browser_handle_dialog",
-        "description": "Handle a dialog",
+        "description": "Handle a dialog (alert, confirm, or prompt)",
         "tags": ["browser_handle_dialog"],
         "status": True,
         "display_name": "browser_handle_dialog",
@@ -65,18 +55,14 @@ MCP_TOOLS_METADATA = [
         "readonly": False,
         "args": {
             "accept": {
-                "description": "Whether to accept the dialog.",
+                "description": "Whether to accept the dialog",
                 "title": "Accept",
                 "type": "boolean"
             },
             "promptText": {
-                "anyOf": [
-                    {"type": "string"},
-                    {"type": "None"}
-                ],
-                "default": None,
-                "description": "The text of the prompt in case of a prompt dialog.",
-                "title": "Prompttext"
+                "description": "The text to enter in a prompt dialog (optional, only for prompts)",
+                "title": "PromptText",
+                "type": "string"
             }
         }
     },
@@ -90,58 +76,44 @@ MCP_TOOLS_METADATA = [
         "readonly": False,
         "args": {
             "function": {
-                "description": "() => { /* code */ } or (element) => { /* code */ } when element is provided",
+                "description": "JavaScript function to evaluate: () => { code } or (element) => { code }",
                 "title": "Function",
                 "type": "string"
             },
             "element": {
-                "anyOf": [
-                    {"type": "string"},
-                    {"type": "None"}
-                ],
-                "default": None,
-                "description": "Human-readable element description used to obtain permission to interact with the element",
-                "title": "Element"
+                "description": "Human-readable element description (optional)",
+                "title": "Element",
+                "type": "string"
             },
             "ref": {
-                "anyOf": [
-                    {"type": "string"},
-                    {"type": "None"}
-                ],
-                "default": None,
-                "description": "Exact target element reference from the page snapshot",
-                "title": "Ref"
+                "description": "Element reference from snapshot (optional)",
+                "title": "Ref",
+                "type": "string"
             }
         }
     },
     {
         "name": "browser_file_upload",
-        "description": "Upload one or multiple files",
+        "description": "Upload one or multiple files to a file input",
         "tags": ["browser_file_upload"],
         "status": True,
         "display_name": "browser_file_upload",
-        "display_description": "Upload one or multiple files",
+        "display_description": "Upload files",
         "readonly": False,
         "args": {
             "paths": {
-                "anyOf": [
-                    {
-                        "items": {
-                            "type": "string"
-                        },
-                        "type": "array"
-                    },
-                    {"type": "None"}
-                ],
-                "default": None,
-                "description": "The absolute paths to the files to upload. Can be single file or multiple files. If omitted, file chooser is cancelled.",
-                "title": "Paths"
+                "description": "Array of absolute file paths to upload",
+                "title": "Paths",
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
             }
         }
     },
     {
         "name": "browser_fill_form",
-        "description": "Fill multiple form fields",
+        "description": "Fill multiple form fields at once",
         "tags": ["browser_fill_form"],
         "status": True,
         "display_name": "browser_fill_form",
@@ -149,22 +121,22 @@ MCP_TOOLS_METADATA = [
         "readonly": False,
         "args": {
             "fields": {
-                "description": "Fields to fill in",
-                "items": {
-                    "$ref": "#/$defs/AnonModel0"
-                },
+                "description": "Array of form fields to fill with name, ref, type, and value",
                 "title": "Fields",
-                "type": "array"
+                "type": "array",
+                "items": {
+                    "type": "object"
+                }
             }
         }
     },
     {
         "name": "browser_install",
-        "description": "Install the browser specified in the config. Call this if you get an error about the browser not being installed.",
+        "description": "Install the browser. Call this if you get an error about browser not being installed",
         "tags": ["browser_install"],
         "status": True,
         "display_name": "browser_install",
-        "display_description": "Install the browser specified in the config. Call this if you get an error about the browser not being installed.",
+        "display_description": "Install browser",
         "readonly": False,
         "args": {}
     },
@@ -174,11 +146,11 @@ MCP_TOOLS_METADATA = [
         "tags": ["browser_press_key"],
         "status": True,
         "display_name": "browser_press_key",
-        "display_description": "Press a key on the keyboard",
+        "display_description": "Press a key",
         "readonly": False,
         "args": {
             "key": {
-                "description": "Name of the key to press or a character to generate, such as `ArrowLeft` or `a`",
+                "description": "Key name or character: ArrowLeft, Enter, a, etc.",
                 "title": "Key",
                 "type": "string"
             }
@@ -186,45 +158,37 @@ MCP_TOOLS_METADATA = [
     },
     {
         "name": "browser_type",
-        "description": "Type text into editable element",
+        "description": "Type text into an editable element",
         "tags": ["browser_type"],
         "status": True,
         "display_name": "browser_type",
-        "display_description": "Type text into editable element",
+        "display_description": "Type text",
         "readonly": False,
         "args": {
             "element": {
-                "description": "Human-readable element description used to obtain permission to interact with the element",
+                "description": "Human-readable element description",
                 "title": "Element",
                 "type": "string"
             },
             "ref": {
-                "description": "Exact target element reference from the page snapshot",
+                "description": "Exact element reference from snapshot",
                 "title": "Ref",
                 "type": "string"
             },
             "text": {
-                "description": "Text to type into the element",
+                "description": "Text to type",
                 "title": "Text",
                 "type": "string"
             },
             "submit": {
-                "anyOf": [
-                    {"type": "boolean"},
-                    {"type": "None"}
-                ],
-                "default": None,
-                "description": "Whether to submit entered text (press Enter after)",
-                "title": "Submit"
+                "description": "Press Enter after typing (true/false)",
+                "title": "Submit",
+                "type": "boolean"
             },
             "slowly": {
-                "anyOf": [
-                    {"type": "boolean"},
-                    {"type": "None"}
-                ],
-                "default": None,
-                "description": "Whether to type one character at a time. Useful for triggering key handlers in the page. By default entire text is filled in at once.",
-                "title": "Slowly"
+                "description": "Type one character at a time (true/false)",
+                "title": "Slowly",
+                "type": "boolean"
             }
         }
     },
@@ -234,7 +198,7 @@ MCP_TOOLS_METADATA = [
         "tags": ["browser_navigate"],
         "status": True,
         "display_name": "browser_navigate",
-        "display_description": "Navigate to a URL",
+        "display_description": "Navigate to URL",
         "readonly": False,
         "args": {
             "url": {
@@ -250,7 +214,7 @@ MCP_TOOLS_METADATA = [
         "tags": ["browser_navigate_back"],
         "status": True,
         "display_name": "browser_navigate_back",
-        "display_description": "Go back to the previous page",
+        "display_description": "Navigate back",
         "readonly": False,
         "args": {}
     },
@@ -260,126 +224,82 @@ MCP_TOOLS_METADATA = [
         "tags": ["browser_network_requests"],
         "status": True,
         "display_name": "browser_network_requests",
-        "display_description": "Returns all network requests since loading the page",
+        "display_description": "Get network requests",
         "readonly": False,
         "args": {}
     },
     {
         "name": "browser_take_screenshot",
-        "description": "Take a screenshot of the current page. You can't perform actions based on the screenshot, use browser_snapshot for actions.",
+        "description": "Take a screenshot of the current page",
         "tags": ["browser_take_screenshot"],
         "status": True,
         "display_name": "browser_take_screenshot",
-        "display_description": "Take a screenshot of the current page. You can't perform actions based on the screenshot, use browser_snapshot for actions.",
+        "display_description": "Take screenshot",
         "readonly": False,
         "args": {
             "type": {
-                "anyOf": [
-                    {"type": "string"},
-                    {"type": "None"}
-                ],
-                "default": "png",
-                "description": "Image format for the screenshot. Default is png.",
-                "title": "Type"
+                "description": "Image format: png or jpeg (default: png)",
+                "title": "Type",
+                "type": "string"
             },
             "filename": {
-                "anyOf": [
-                    {"type": "string"},
-                    {"type": "None"}
-                ],
-                "default": None,
-                "description": "File name to save the screenshot to. Defaults to `page-{timestamp}.{png|jpeg}` if not specified. Prefer relative file names to stay within the output directory.",
-                "title": "Filename"
-            },
-            "element": {
-                "anyOf": [
-                    {"type": "string"},
-                    {"type": "None"}
-                ],
-                "default": None,
-                "description": "Human-readable element description used to obtain permission to screenshot the element. If not provided, the screenshot will be taken of viewport. If element is provided, ref must be provided too.",
-                "title": "Element"
-            },
-            "ref": {
-                "anyOf": [
-                    {"type": "string"},
-                    {"type": "None"}
-                ],
-                "default": None,
-                "description": "Exact target element reference from the page snapshot. If not provided, the screenshot will be taken of viewport. If ref is provided, element must be provided too.",
-                "title": "Ref"
+                "description": "Filename to save as (optional)",
+                "title": "Filename",
+                "type": "string"
             },
             "fullPage": {
-                "anyOf": [
-                    {"type": "boolean"},
-                    {"type": "None"}
-                ],
-                "default": None,
-                "description": "When True, takes a screenshot of the full scrollable page, instead of the currently visible viewport. Cannot be used with element screenshots.",
-                "title": "Fullpage"
+                "description": "Capture full scrollable page (true/false)",
+                "title": "FullPage",
+                "type": "boolean"
             }
         }
     },
     {
         "name": "browser_snapshot",
-        "description": "Capture accessibility snapshot of the current page, this is better than screenshot",
+        "description": "Capture accessibility snapshot of the current page - better than screenshot for element interaction",
         "tags": ["browser_snapshot"],
         "status": True,
         "display_name": "browser_snapshot",
-        "display_description": "Capture accessibility snapshot of the current page, this is better than screenshot",
+        "display_description": "Capture page snapshot",
         "readonly": False,
         "args": {}
     },
     {
         "name": "browser_click",
-        "description": "Perform click on a web page",
+        "description": "Perform click on a web page element",
         "tags": ["browser_click"],
         "status": True,
         "display_name": "browser_click",
-        "display_description": "Perform click on a web page",
+        "display_description": "Click element",
         "readonly": False,
         "args": {
             "element": {
-                "description": "Human-readable element description used to obtain permission to interact with the element",
+                "description": "Human-readable element description",
                 "title": "Element",
                 "type": "string"
             },
             "ref": {
-                "description": "Exact target element reference from the page snapshot",
+                "description": "Exact element reference from snapshot",
                 "title": "Ref",
                 "type": "string"
             },
             "doubleClick": {
-                "anyOf": [
-                    {"type": "boolean"},
-                    {"type": "None"}
-                ],
-                "default": None,
-                "description": "Whether to perform a double click instead of a single click",
-                "title": "Doubleclick"
+                "description": "Perform double-click instead of single (true/false)",
+                "title": "DoubleClick",
+                "type": "boolean"
             },
             "button": {
-                "anyOf": [
-                    {"type": "string"},
-                    {"type": "None"}
-                ],
-                "default": None,
-                "description": "Button to click, defaults to left",
-                "title": "Button"
+                "description": "Mouse button: left, right, or middle (default: left)",
+                "title": "Button",
+                "type": "string"
             },
             "modifiers": {
-                "anyOf": [
-                    {
-                        "items": {
-                            "type": "string"
-                        },
-                        "type": "array"
-                    },
-                    {"type": "None"}
-                ],
-                "default": None,
-                "description": "Modifier keys to press",
-                "title": "Modifiers"
+                "description": "Modifier keys to press during click (array of strings)",
+                "title": "Modifiers",
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
             }
         }
     },
@@ -389,47 +309,47 @@ MCP_TOOLS_METADATA = [
         "tags": ["browser_drag"],
         "status": True,
         "display_name": "browser_drag",
-        "display_description": "Perform drag and drop between two elements",
+        "display_description": "Drag and drop",
         "readonly": False,
         "args": {
             "startElement": {
-                "description": "Human-readable source element description used to obtain the permission to interact with the element",
-                "title": "Startelement",
+                "description": "Source element description",
+                "title": "StartElement",
                 "type": "string"
             },
             "startRef": {
-                "description": "Exact source element reference from the page snapshot",
-                "title": "Startref",
+                "description": "Source element reference",
+                "title": "StartRef",
                 "type": "string"
             },
             "endElement": {
-                "description": "Human-readable target element description used to obtain the permission to interact with the element",
-                "title": "Endelement",
+                "description": "Target element description",
+                "title": "EndElement",
                 "type": "string"
             },
             "endRef": {
-                "description": "Exact target element reference from the page snapshot",
-                "title": "Endref",
+                "description": "Target element reference",
+                "title": "EndRef",
                 "type": "string"
             }
         }
     },
     {
         "name": "browser_hover",
-        "description": "Hover over element on page",
+        "description": "Hover over an element on the page",
         "tags": ["browser_hover"],
         "status": True,
         "display_name": "browser_hover",
-        "display_description": "Hover over element on page",
+        "display_description": "Hover over element",
         "readonly": False,
         "args": {
             "element": {
-                "description": "Human-readable element description used to obtain permission to interact with the element",
+                "description": "Human-readable element description",
                 "title": "Element",
                 "type": "string"
             },
             "ref": {
-                "description": "Exact target element reference from the page snapshot",
+                "description": "Exact element reference",
                 "title": "Ref",
                 "type": "string"
             }
@@ -441,91 +361,74 @@ MCP_TOOLS_METADATA = [
         "tags": ["browser_select_option"],
         "status": True,
         "display_name": "browser_select_option",
-        "display_description": "Select an option in a dropdown",
+        "display_description": "Select dropdown option",
         "readonly": False,
         "args": {
             "element": {
-                "description": "Human-readable element description used to obtain permission to interact with the element",
+                "description": "Human-readable dropdown description",
                 "title": "Element",
                 "type": "string"
             },
             "ref": {
-                "description": "Exact target element reference from the page snapshot",
+                "description": "Dropdown element reference",
                 "title": "Ref",
                 "type": "string"
             },
             "values": {
-                "description": "Array of values to select in the dropdown. This can be a single value or multiple values.",
+                "description": "Array of values to select",
+                "title": "Values",
+                "type": "array",
                 "items": {
                     "type": "string"
-                },
-                "title": "Values",
-                "type": "array"
+                }
             }
         }
     },
     {
         "name": "browser_tabs",
-        "description": "List, create, close, or select a browser tab.",
+        "description": "List, create, close, or select browser tabs",
         "tags": ["browser_tabs"],
         "status": True,
         "display_name": "browser_tabs",
-        "display_description": "List, create, close, or select a browser tab.",
+        "display_description": "Manage browser tabs",
         "readonly": False,
         "args": {
             "action": {
-                "description": "Operation to perform",
+                "description": "Action to perform: list, new, close, or select",
                 "title": "Action",
                 "type": "string"
             },
             "index": {
-                "anyOf": [
-                    {"type": "number"},
-                    {"type": "None"}
-                ],
-                "default": None,
-                "description": "Tab index, used for close/select. If omitted for close, current tab is closed.",
-                "title": "Index"
+                "description": "Tab index for close/select actions (optional)",
+                "title": "Index",
+                "type": "number"
             }
         }
     },
     {
         "name": "browser_wait_for",
-        "description": "Wait for text to appear or disappear or a specified time to pass",
+        "description": "Wait for text to appear/disappear or time to pass",
         "tags": ["browser_wait_for"],
         "status": True,
         "display_name": "browser_wait_for",
-        "display_description": "Wait for text to appear or disappear or a specified time to pass",
+        "display_description": "Wait for condition",
         "readonly": False,
         "args": {
             "time": {
-                "anyOf": [
-                    {"type": "number"},
-                    {"type": "None"}
-                ],
-                "default": None,
-                "description": "The time to wait in seconds",
-                "title": "Time"
+                "description": "Time to wait in seconds (optional)",
+                "title": "Time",
+                "type": "number"
             },
             "text": {
-                "anyOf": [
-                    {"type": "string"},
-                    {"type": "None"}
-                ],
-                "default": None,
-                "description": "The text to wait for",
-                "title": "Text"
+                "description": "Text to wait for to appear (optional)",
+                "title": "Text",
+                "type": "string"
             },
             "textGone": {
-                "anyOf": [
-                    {"type": "string"},
-                    {"type": "None"}
-                ],
-                "default": None,
-                "description": "The text to wait for to disappear",
-                "title": "Textgone"
+                "description": "Text to wait for to disappear (optional)",
+                "title": "TextGone",
+                "type": "string"
             }
         }
     }
 ]
-

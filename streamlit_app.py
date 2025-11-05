@@ -3,7 +3,7 @@ import requests
 import os
 import uuid
 import json
-from mcp_tools_metadata_simple import MCP_TOOLS_METADATA
+from mcp_tools_metadata import MCP_TOOLS_METADATA
 
 st.set_page_config(page_title="Langflow API Client", page_icon="🤖", layout="wide")
 
