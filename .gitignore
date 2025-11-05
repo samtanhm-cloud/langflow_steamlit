@@ -29,3 +29,7 @@ Thumbs.db
 .env
 secrets.toml
 
+# Backup files
+*.backup
+*~
+
