@@ -1,7 +1,9 @@
 import streamlit as st
 import requests
+import os
 import uuid
 import json
+from mcp_tools_metadata import MCP_TOOLS_METADATA
 
 st.set_page_config(page_title="Langflow API Client", page_icon="🤖", layout="wide")
 
@@ -24,7 +26,7 @@ with st.sidebar:
     if not api_endpoint:
         api_endpoint = st.text_input(
             "API Endpoint", 
-            value="http://localizacstudio.ads.autodesk.com:7860/api/v1/run/4b06762f-7329-454b-b4a0-fcd2dc702b55",
+            value="http://localhost:7860/api/v1/run/3cc7c38d-7371-49b0-a741-f20e9e902c8b",
             help="Your Langflow API endpoint URL"
         )
     else:
@@ -39,14 +41,18 @@ with st.sidebar:
         )
     else:
         st.success("✅ API Key loaded from secrets")
+        # Show first few characters for debugging
+        if len(api_key) > 4:
+            st.caption(f"Key starts with: {api_key[:4]}...")
     
     st.divider()
     
-    # Model configuration
-    st.subheader("Model Settings")
-    ollama_base_url = st.text_input("Ollama Base URL", value="http://localhost:11434/")
-    model_name = st.text_input("Model Name", value="gpt-oss:120b")
-    n_messages = st.number_input("Max Messages", value=100, min_value=1)
+    # Simplified mode toggle
+    simplified_mode = st.checkbox(
+        "🚀 Simplified Mode (Faster)",
+        value=False,
+        help="Send a simpler request without all MCP tools configured - useful for testing"
+    )
 
 # Main content area
 st.header("💬 Chat Interface")
@@ -62,144 +68,47 @@ input_value = st.text_area(
 # System prompt customization
 with st.expander("🎯 Advanced Settings"):
     system_prompt = st.text_area(
-        "System Prompt",
+        "System Prompt (Agent)",
         value="You are a helpful assistant that can use tools to answer questions and perform tasks.",
         height=100
     )
     
-    format_instructions = st.text_area(
-        "Format Instructions",
-        value="You are an AI that extracts structured JSON objects from unstructured text. Use a predefined schema with expected types (str, int, float, bool, dict). Extract ALL relevant instances that match the schema - if multiple patterns exist, capture them all. Fill missing or ambiguous values with defaults: None for missing values. Remove exact duplicates but keep variations that have different field values. Always return valid JSON in the expected format, never throw errors. If multiple objects can be extracted, return them all in the structured format.",
-        height=150
+    prompt_template = st.text_area(
+        "Prompt Template",
+        value="Answer the user as if you were a GenAI expert, enthusiastic about helping them get started building something fresh.",
+        height=100
     )
 
 # Build payload
 payload = {
     "output_type": "chat",
     "input_type": "chat",
-    "input_value": input_value,
     "tweaks": {
-        "Agent-9hWQI": {
-            "format_instructions": format_instructions,
-            "n_messages": n_messages,
-            "output_schema": [],
+        "ChatInput-5DIkl": {
+            "input_value": input_value
+        },
+        "Prompt-Jl3Kt": {
+            "template": prompt_template
+        },
+        "Agent-LbPwq": {
+            "input_value": "",
             "system_prompt": system_prompt
-        },
-        "OllamaModel-F13V6": {
-            "base_url": ollama_base_url,
-            "model_name": model_name
-        },
-        "MCPTools-qmP5R": {
-            "mcp_server": {
-                "name": "playwright_extension",
-                "config": {
-                    "command": "npx",
-                    "args": ["@playwright/mcp@latest"]
-                }
-            },
-            "tools_metadata": [
-                {
-                    "name": "browser_close",
-                    "description": "Close the page",
-                    "tags": ["browser_close"],
-                    "status": True,
-                    "display_name": "browser_close",
-                    "display_description": "Close the page",
-                    "readonly": False,
-                    "args": {}
-                },
-                {
-                    "name": "browser_resize",
-                    "description": "Resize the browser window",
-                    "tags": ["browser_resize"],
-                    "status": True,
-                    "display_name": "browser_resize",
-                    "display_description": "Resize the browser window",
-                    "readonly": False,
-                    "args": {
-                        "width": {
-                            "description": "Width of the browser window",
-                            "title": "Width",
-                            "type": "number"
-                        },
-                        "height": {
-                            "description": "Height of the browser window",
-                            "title": "Height",
-                            "type": "number"
-                        }
-                    }
-                },
-                {
-                    "name": "browser_console_messages",
-                    "description": "Returns all console messages",
-                    "tags": ["browser_console_messages"],
-                    "status": True,
-                    "display_name": "browser_console_messages",
-                    "display_description": "Returns all console messages",
-                    "readonly": False,
-                    "args": {
-                        "onlyErrors": {
-                            "anyOf": [
-                                {"type": "boolean"},
-                                {"type": "None"}
-                            ],
-                            "default": None,
-                            "description": "Only return error messages",
-                            "title": "Onlyerrors"
-                        }
-                    }
-                },
-                {
-                    "name": "browser_navigate",
-                    "description": "Navigate to a URL",
-                    "tags": ["browser_navigate"],
-                    "status": True,
-                    "display_name": "browser_navigate",
-                    "display_description": "Navigate to a URL",
-                    "readonly": False,
-                    "args": {
-                        "url": {
-                            "description": "The URL to navigate to",
-                            "title": "Url",
-                            "type": "string"
-                        }
-                    }
-                },
-                {
-                    "name": "browser_snapshot",
-                    "description": "Capture accessibility snapshot of the current page",
-                    "tags": ["browser_snapshot"],
-                    "status": True,
-                    "display_name": "browser_snapshot",
-                    "display_description": "Capture accessibility snapshot of the current page",
-                    "readonly": False,
-                    "args": {}
-                },
-                {
-                    "name": "browser_click",
-                    "description": "Perform click on a web page",
-                    "tags": ["browser_click"],
-                    "status": True,
-                    "display_name": "browser_click",
-                    "display_description": "Perform click on a web page",
-                    "readonly": False,
-                    "args": {
-                        "element": {
-                            "description": "Human-readable element description",
-                            "title": "Element",
-                            "type": "string"
-                        },
-                        "ref": {
-                            "description": "Exact target element reference",
-                            "title": "Ref",
-                            "type": "string"
-                        }
-                    }
-                }
-            ]
         }
     }
 }
+
+# Only add MCP Tools if NOT in simplified mode
+if not simplified_mode:
+    payload["tweaks"]["MCPTools-CKcKC"] = {
+        "mcp_server": {
+            "name": "playwright_extension",
+            "config": {
+                "command": "npx",
+                "args": ["@playwright/mcp@latest"]
+            }
+        },
+        "tools_metadata": MCP_TOOLS_METADATA
+    }
 
 # Generate session ID
 payload["session_id"] = str(uuid.uuid4())
@@ -223,14 +132,17 @@ if send_button:
                 # Prepare headers
                 headers = {"Content-Type": "application/json"}
                 if api_key:
+                    # Try multiple authentication formats
                     headers["Authorization"] = f"Bearer {api_key}"
+                    headers["x-api-key"] = api_key  # Alternative header format
                 
-                # Send API request
+                # Send API request with extended timeout for complex operations
+                st.info("⏳ This may take several minutes for complex requests (up to 10 min)...")
                 response = requests.post(
                     api_endpoint,
                     json=payload,
                     headers=headers,
-                    timeout=30
+                    timeout=600  # 10 minutes timeout
                 )
                 
                 # Check for authentication errors
@@ -281,7 +193,19 @@ if send_button:
                         st.json(payload)
                 
             except requests.exceptions.Timeout:
-                st.error("⏱️ Request timed out. The server took too long to respond.")
+                st.error("⏱️ Request timed out (>10 minutes)")
+                st.warning("""
+                **Possible reasons:**
+                - The Langflow server is processing a very complex request
+                - The server might be overloaded or stuck
+                - Network connectivity issues
+                
+                **Try:**
+                1. Simplify your request (shorter message, fewer tools)
+                2. Use "Simplified Mode" in the sidebar
+                3. Check if the Langflow server is running: `curl http://localhost:7860`
+                4. Contact your Langflow admin if the issue persists
+                """)
             except requests.exceptions.ConnectionError:
                 st.error("🔌 Connection error. Please check if the API endpoint is accessible.")
             except requests.exceptions.RequestException as e:
